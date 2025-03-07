@@ -54,6 +54,12 @@ export function PlayerLayer({ width, height }: PlayerLayerProps) {
     );
   };
 
+  const handleDragStart = (e: any) => {
+    const player = e.target;
+    // Store initial position
+    player.attrs.lastY = player.y();
+  };
+
   const handleDragMove = (e: any) => {
     const player = e.target;
     const type = player.attrs.type;
@@ -69,11 +75,29 @@ export function PlayerLayer({ width, height }: PlayerLayerProps) {
     player.attrs.lastY = player.y();
   };
 
+  const handleDragEnd = (e: any) => {
+    const player = e.target;
+    // Add move action to history
+    addAction(
+      'PLAYER_MOVE',
+      {
+        id: player.id(),
+        type: player.attrs.type,
+        x: player.x(),
+        y: player.y(),
+        radius: player.radius()
+      },
+      { position: { x: player.x(), y: player.y() } }
+    );
+  };
+
   return (
     <Group
       onMouseDown={handleClick}
       onTouchStart={handleClick}
+      onDragStart={handleDragStart}
       onDragMove={handleDragMove}
+      onDragEnd={handleDragEnd}
     >
       {/* Players will be rendered here based on state */}
     </Group>
