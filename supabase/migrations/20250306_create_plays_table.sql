@@ -51,5 +51,31 @@ CREATE TRIGGER plays_handle_updated_at
     FOR EACH ROW
     EXECUTE FUNCTION public.handle_updated_at();
 
--- Enable RLS
+-- First, enable RLS and remove any existing policies
 ALTER TABLE public.plays ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Users can create plays" ON public.plays;
+DROP POLICY IF EXISTS "Users can view their own plays" ON public.plays;
+DROP POLICY IF EXISTS "Users can update their own plays" ON public.plays;
+DROP POLICY IF EXISTS "Users can delete their own plays" ON public.plays;
+
+-- Then create specific allow policies
+CREATE POLICY "Users can create plays" ON public.plays
+    FOR INSERT
+    TO authenticated
+    WITH CHECK (NEW.created_by = auth.uid());
+
+CREATE POLICY "Users can view their own plays" ON public.plays
+    FOR SELECT
+    TO authenticated
+    USING (created_by = auth.uid());
+
+CREATE POLICY "Users can update their own plays" ON public.plays
+    FOR UPDATE
+    TO authenticated
+    USING (created_by = auth.uid())
+    WITH CHECK (created_by = auth.uid());
+
+CREATE POLICY "Users can delete their own plays" ON public.plays
+    FOR DELETE
+    TO authenticated
+    USING (created_by = auth.uid());

@@ -1,10 +1,5 @@
 import { create } from 'zustand'
-import { createClient } from '@supabase/supabase-js'
-
-// Initialize Supabase client
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY
-const supabase = createClient(supabaseUrl, supabaseKey)
+import { supabase } from '../lib/supabase'
 
 export type ToolState = 
   | 'select'
@@ -16,6 +11,7 @@ export type ToolState =
   | 'circle'
   | 'arrow'
   | 'block'
+  | 'remove'
 
 export type EditingState = 'idle' | 'placing' | 'drawing' | 'dragging'
 
@@ -62,6 +58,12 @@ interface ToolStateStore {
   currentTool: ToolState
   editingState: EditingState
   
+  // Grid functionality
+  gridEnabled: boolean
+  toggleGrid: () => void
+  alignmentGuidesEnabled: boolean
+  toggleAlignmentGuides: () => void
+  
   // History management
   history: Action[]
   currentIndex: number
@@ -96,6 +98,8 @@ export const useToolState = create<ToolStateStore>((set, get) => ({
   formationName: '',
   isFormationSaving: false,
   formationError: null,
+  gridEnabled: true,
+  alignmentGuidesEnabled: true,
   
   // Actions
   setTool: (tool) => set({ currentTool: tool }),
@@ -202,7 +206,16 @@ export const useToolState = create<ToolStateStore>((set, get) => ({
     }
   },
 
+  // Grid functionality
+  toggleGrid: () => set(state => ({ gridEnabled: !state.gridEnabled })),
+  toggleAlignmentGuides: () => set(state => ({ alignmentGuidesEnabled: !state.alignmentGuidesEnabled })),
+  
   handleKeyPress: (e) => {
+    // Ignore shortcuts when typing in inputs
+    if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+      return
+    }
+    
     const state = get()
     state.shortcuts.forEach(shortcut => {
       if (
@@ -222,6 +235,18 @@ export const useToolState = create<ToolStateStore>((set, get) => ({
 // Register default shortcuts if not in test environment
 if (process.env.NODE_ENV !== 'test') {
   const store = useToolState.getState()
+  
+  // Grid toggle: G
+  store.registerShortcut({
+    key: 'g',
+    action: () => store.toggleGrid()
+  })
+  
+  // Alignment guides toggle: A
+  store.registerShortcut({
+    key: 'a',
+    action: () => store.toggleAlignmentGuides()
+  })
 
   // Undo: Cmd/Ctrl + Z
   store.registerShortcut({
@@ -260,5 +285,17 @@ if (process.env.NODE_ENV !== 'test') {
   store.registerShortcut({
     key: 'r',
     action: () => store.setTool('path')
+  })
+
+  // Remove tool: Delete
+  store.registerShortcut({
+    key: 'Delete',
+    action: () => store.setTool('remove')
+  })
+
+  // Alternative Remove shortcut: Backspace
+  store.registerShortcut({
+    key: 'Backspace',
+    action: () => store.setTool('remove')
   })
 }

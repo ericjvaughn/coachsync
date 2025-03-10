@@ -13,7 +13,8 @@ dist-ssr/
 build/
 
 # Development
-.env
+*.env
+!.env
 .env.local
 .env.development.local
 .env.test.local
@@ -70,3 +71,6 @@ Thumbs.db
 
 # Project specific
 # Add any project-specific ignores here
+
+# windsurf rules
+.windsurfrules

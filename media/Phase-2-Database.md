@@ -141,7 +141,7 @@ THE BEST CODE IS THE CODE YOU DIDN'T WRITE
 4. Confirm no modifications to Phase 1 code are needed
 5. If in doubt, STOP and ASK
 
-# Phase 2: Database Integration
+# Phase 2: Core Experience & Database Integration
 
 ## Supabase Setup
 1. Initialize Supabase project
@@ -161,22 +161,29 @@ THE BEST CODE IS THE CODE YOU DIDN'T WRITE
 1. Implement formation saving
 2. Add play persistence
 3. Set up playbook management
-4. Configure auto-save system
-5. Add export/import functionality
+4. Set up data validation
+5. Implement data recovery mechanisms
+
+## Enhanced Play Design (From Phase 3)
+1. Improve player placement tools
+2. Implement advanced route drawing
+3. Add play variations system
+4. Create basic play templates
+5. Enhance user feedback during drawing
+
+## Formation Enhancement (From Phase 3)
+1. Improve formation creation interface
+2. Add basic formation templates
+3. Implement simple formation editing tools
+4. Create formation preview system
+5. Add formation categorization
 
 ## Authentication Flow
 1. Add sign up process
 2. Implement login system
 3. Create team management
-4. Set up role-based access
-5. Add session management
-
-## Storage System
-1. Configure Supabase Storage
-2. Implement thumbnail generation
-3. Set up asset management
-4. Add backup system
-5. Configure CDN caching
+4. Set up basic access controls
+5. Add simple session management
 
 ## What NOT to Build Yet
 - Real-time collaboration features

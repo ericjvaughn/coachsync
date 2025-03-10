@@ -8,8 +8,15 @@ export function FormationSaveButton() {
   const { history, currentIndex } = useToolState()
 
   const handleSave = async () => {
-    const players = extractPlayersFromHistory(history, currentIndex)
-    await saveFormation(players)
+    try {
+      console.log('FormationSaveButton: Starting save process')
+      const players = extractPlayersFromHistory(history, currentIndex)
+      console.log('FormationSaveButton: Players extracted', players.length)
+      await saveFormation(players)
+      console.log('FormationSaveButton: Save completed successfully')
+    } catch (err) {
+      console.error('FormationSaveButton: Save failed', err)
+    }
   }
 
   return (
@@ -29,8 +36,10 @@ export function FormationSaveButton() {
         {isSaving ? 'Saving...' : 'Save Formation'}
       </button>
       {error && (
-        <div className="absolute -bottom-6 left-0 right-0 text-center">
-          <span className="text-xs text-red-500">{error}</span>
+        <div className="absolute -bottom-6 left-0 right-0 text-center max-w-md mx-auto">
+          <span className="text-xs text-red-500 whitespace-normal break-words">
+            Error: {error}
+          </span>
         </div>
       )}
     </div>

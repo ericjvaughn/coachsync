@@ -1,98 +1,45 @@
-import React, { useState } from 'react'
-import { useToolState } from '../../store/toolState'
-import { createClient } from '@supabase/supabase-js'
-
-// Initialize Supabase client
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY
-const supabase = createClient(supabaseUrl, supabaseKey)
+import React from 'react'
+import { usePlayState } from '../../store/playState'
 
 export function HeaderToolbar() {
-  const [formationName, setFormationName] = useState('')
-  const [playName, setPlayName] = useState('')
-  const [defense, setDefense] = useState('')
-  const [isSaving, setIsSaving] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  
-  const { history, currentIndex } = useToolState()
+  const { 
+    playName,
+    formationName,
+    defense,
+    isSaving, 
+    error,
+    setPlayName,
+    setFormationName,
+    setDefense,
+    savePlay,
+    clearError 
+  } = usePlayState()
 
-  const isValid = formationName.trim() && playName.trim()
+  const isValid = playName.trim() && formationName.trim()
 
-  const handleSave = async () => {
+  const handleSave = () => {
     if (!isValid) return
-    setIsSaving(true)
-    setError(null)
-
-    try {
-      // Get current user
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) throw new Error('Not authenticated')
-
-      // Extract players from history
-      const players = history
-        .slice(0, currentIndex + 1)
-        .filter(action => 
-          action.type === 'PLAYER_ADD' || 
-          action.type === 'PLAYER_MOVE'
-        )
-        .reduce((acc: any[], action) => {
-          if (action.type === 'PLAYER_ADD') {
-            return [...acc, action.payload]
-          }
-          // Handle player moves
-          return acc.map(player => 
-            player.id === action.payload.id ? action.payload : player
-          )
-        }, [])
-
-      // Determine formation type
-      const type = players.some(p => p.type === 'defense') ? 'defense' : 'offense'
-
-      // Save formation
-      const { data: formation, error: formationError } = await supabase
-        .from('formations')
-        .insert({
-          name: formationName,
-          type,
-          player_positions: { players },
-          created_by: user.id
-        })
-        .select()
-        .single()
-
-      if (formationError) throw formationError
-
-      // Save play
-      const { error: playError } = await supabase
-        .from('plays')
-        .insert({
-          name: playName,
-          type,
-          formation_id: formation.id,
-          player_positions: { players },
-          routes: { routes: [] }, // We'll handle routes in a future task
-          created_by: user.id,
-          defense: defense || null
-        })
-
-      if (playError) throw playError
-
-      // Reset form
-      setFormationName('')
-      setPlayName('')
-      setDefense('')
-      setError(null)
-    } catch (err: any) {
-      setError(err.message)
-    } finally {
-      setIsSaving(false)
-    }
+    savePlay()
   }
   return (
     <div className="absolute top-4 left-1/2 -translate-x-1/2 flex items-center space-x-6">
-      <button className="px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-md hover:bg-blue-600 transition-colors">
-        New Play
-      </button>
+      <div className="flex space-x-2">
+        <button className="px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-md hover:bg-blue-600 transition-colors">
+          New Play
+        </button>
+        <button 
+          onClick={() => window.location.href = '/playbooks'}
+          className="px-4 py-2 text-sm font-medium text-white bg-gray-700 rounded-md hover:bg-gray-600 transition-colors"
+        >
+          Playbooks
+        </button>
+        <button 
+          onClick={() => window.location.href = '/team-settings'}
+          className="px-4 py-2 text-sm font-medium text-white bg-gray-700 rounded-md hover:bg-gray-600 transition-colors"
+        >
+          Team Settings
+        </button>
+      </div>
       <div className="flex items-center space-x-4 relative">
         <div className="relative">
           <div className="relative flex items-center">
@@ -139,8 +86,10 @@ export function HeaderToolbar() {
         </button>
 
         {error && (
-          <div className="absolute -bottom-6 left-0 right-0 text-center">
-            <span className="text-xs text-red-500">{error}</span>
+          <div className="absolute -bottom-6 left-0 right-0 text-center max-w-md mx-auto">
+            <span className="text-xs text-red-500 whitespace-normal break-words">
+              Error: {error}
+            </span>
           </div>
         )}
       </div>

@@ -9,7 +9,94 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      teams: {
+        Row: {
+          id: string
+          created_by: string
+          name: string
+          school: string
+          mascot: string | null
+          level: string
+          season: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          created_by: string
+          name: string
+          school: string
+          mascot?: string | null
+          level: string
+          season: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          created_by?: string
+          name?: string
+          school?: string
+          mascot?: string | null
+          level?: string
+          season?: string
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      formations: {
+        Row: {
+          id: string
+          team_id: string
+          created_by: string
+          name: string
+          type: 'offense' | 'defense'
+          created_at: string
+          updated_at: string
+          last_used_at: string
+          is_default: boolean
+          player_positions: Json
+          personnel_package: string | null
+          tags: string[]
+          coverage: string | null
+          blitz: boolean | null
+          thumbnail_url: string | null
+        }
+        Insert: {
+          id?: string
+          team_id: string
+          created_by: string
+          name: string
+          type: 'offense' | 'defense'
+          created_at?: string
+          updated_at?: string
+          last_used_at?: string
+          is_default?: boolean
+          player_positions: Json
+          personnel_package?: string | null
+          tags?: string[]
+          coverage?: string | null
+          blitz?: boolean | null
+          thumbnail_url?: string | null
+        }
+        Update: {
+          id?: string
+          team_id?: string
+          created_by?: string
+          name?: string
+          type?: 'offense' | 'defense'
+          created_at?: string
+          updated_at?: string
+          last_used_at?: string
+          is_default?: boolean
+          player_positions?: Json
+          personnel_package?: string | null
+          tags?: string[]
+          coverage?: string | null
+          blitz?: boolean | null
+          thumbnail_url?: string | null
+        }
+      }
     }
     Views: {
       [_ in never]: never
@@ -18,7 +105,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      formation_type: 'offense' | 'defense'
     }
     CompositeTypes: {
       [_ in never]: never

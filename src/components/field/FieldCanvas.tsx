@@ -15,6 +15,7 @@ export function FieldCanvas({ width, height, children }: FieldCanvasProps) {
       className="rounded-lg p-4"
       style={{ padding: '16px' }}
     >
+      {/* Background layer - just for the white rectangle */}
       <Layer>
         <Rect
           width={width}
@@ -25,6 +26,10 @@ export function FieldCanvas({ width, height, children }: FieldCanvasProps) {
           shadowOpacity={0.1}
           cornerRadius={4}
         />
+      </Layer>
+      
+      {/* Main content layer - for the football field and interactive elements */}
+      <Layer>
         {children}
       </Layer>
     </Stage>
